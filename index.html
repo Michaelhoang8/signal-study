@@ -3,74 +3,67 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Signal Study · Time into frequency</title>
+    <title>Signal Study</title>
     <link rel="stylesheet" href="/style.css" />
     <script type="module" src="/app.js"></script>
   </head>
   <body>
-    <header>
-      <a class="brand" href="/"><span>∿</span> SIGNAL STUDY</a
-      ><span>AN INSTRUMENT FOR UNDERSTANDING</span
-      ><a href="https://github.com/Michaelhoang8/signal-study">Source ↗</a>
-    </header>
-    <main>
-      <section class="title">
-        <div>
-          <p class="eyebrow">DIGITAL SIGNAL PROCESSING</p>
-          <h1>Time into frequency.</h1>
+    <main class="instrument">
+      <header>
+        <h1><span aria-hidden="true">∿</span> Signal Study</h1>
+        <div class="transport">
+          <button id="listen" disabled>Listen once ▷</button
+          ><button id="save-wav" disabled>WAV ↓</button
+          ><button id="measurements-open" aria-haspopup="dialog">Measurements</button
+          ><button id="files-open" aria-haspopup="dialog">Files</button>
         </div>
-        <p>A small, precise listening room<br />for the mathematics of signals.</p>
-      </section>
-      <div class="studio">
-        <div class="plots">
-          <section class="plot-panel">
-            <div class="panel-heading">
-              <h2>01 / The waveform</h2>
-              <span id="sample-source">SYNTHESIZED</span>
+      </header>
+      <div class="screens">
+        <section class="plot-panel">
+          <div class="panel-heading">
+            <h2>Waveform</h2>
+            <span id="sample-source">SYNTHESIZED</span>
+          </div>
+          <div id="wave-plot" class="plot"></div>
+          <p id="wave-caption" class="caption"></p>
+          <div class="stats" id="stats"></div>
+        </section>
+        <section class="plot-panel spectrum-panel">
+          <div class="panel-heading">
+            <h2>Spectrum</h2>
+            <label for="scale"
+              >Scale<select id="scale">
+                <option value="db">Decibels</option>
+                <option value="linear">Linear amplitude</option>
+              </select></label
+            >
+          </div>
+          <div class="plot-options">
+            <div class="legend">
+              <span class="rectangular">Rectangular</span><span class="hann">Periodic Hann</span>
             </div>
-            <div id="wave-plot" class="plot"></div>
-            <p id="wave-caption" class="caption"></p>
-            <div class="stats" id="stats"></div>
-          </section>
-          <section class="plot-panel spectrum-panel">
-            <div class="panel-heading">
-              <h2>02 / The spectrum</h2>
-              <label for="scale"
-                >Scale<select id="scale">
-                  <option value="db">Decibels</option>
-                  <option value="linear">Linear amplitude</option>
-                </select></label
-              >
-            </div>
-            <div class="plot-options">
-              <div class="legend">
-                <span class="rectangular">Rectangular</span><span class="hann">Periodic Hann</span>
-              </div>
-              <label for="range"
-                >Frequency range<select id="range">
-                  <option value="0">Full Nyquist range</option>
-                  <option value="2000">Up to 2 kHz</option>
-                  <option value="500">Up to 500 Hz</option>
-                </select></label
-              >
-            </div>
-            <div id="spectrum-plot" class="plot"></div>
-            <p class="caption" id="spectrum-caption"></p>
-            <div class="bin-inspector">
-              <label for="bin"
-                >Inspect a bin<input id="bin" type="range" min="0" max="512" value="125" disabled
-              /></label>
-              <p id="bin-readout"></p>
-            </div>
-          </section>
-        </div>
-        <aside class="controls">
-          <form id="signal-form">
-            <div class="panel-heading">
-              <h2>Shape the signal</h2>
-              <span>03</span>
-            </div>
-            <label for="example">Starting point</label
+            <label for="range"
+              >Frequency range<select id="range">
+                <option value="0">Full Nyquist range</option>
+                <option value="2000">Up to 2 kHz</option>
+                <option value="500">Up to 500 Hz</option>
+              </select></label
+            >
+          </div>
+          <div id="spectrum-plot" class="plot"></div>
+          <p class="caption" id="spectrum-caption"></p>
+          <div class="bin-inspector">
+            <label for="bin"
+              >Inspect a bin<input id="bin" type="range" min="0" max="512" value="125" disabled
+            /></label>
+            <p id="bin-readout"></p>
+          </div>
+        </section>
+      </div>
+      <section class="control-rack" aria-label="Signal generator">
+        <form id="signal-form">
+          <div class="acquisition">
+            <label for="example">Preset</label
             ><select id="example">
               <option value="clean">Two clean, bin-centered tones</option>
               <option value="leakage">A tone between the bins</option>
@@ -99,118 +92,103 @@
                 </select></label
               >
             </div>
-            <fieldset>
-              <legend>TONE A</legend>
-              <div class="pair">
-                <label
-                  >Frequency / Hz<input
-                    id="frequency-a"
-                    type="number"
-                    min="0"
-                    step="any"
-                    value="1000"
-                    required /></label
-                ><label
-                  >Amplitude<input
-                    id="amplitude-a"
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="any"
-                    value="0.8"
-                    required
-                /></label>
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>TONE B</legend>
-              <div class="pair">
-                <label
-                  >Frequency / Hz<input
-                    id="frequency-b"
-                    type="number"
-                    min="0"
-                    step="any"
-                    value="1800"
-                    required /></label
-                ><label
-                  >Amplitude<input
-                    id="amplitude-b"
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="any"
-                    value="0.3"
-                    required
-                /></label>
-              </div>
-            </fieldset>
-            <details>
-              <summary>Noise & DC offset</summary>
-              <div class="pair">
-                <label
-                  >Noise amplitude<input
-                    id="noise"
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="any"
-                    value="0"
-                    required /></label
-                ><label
-                  >DC offset<input
-                    id="offset"
-                    type="number"
-                    min="-1"
-                    max="1"
-                    step="any"
-                    value="0"
-                    required
-                /></label>
-              </div>
+          </div>
+          <fieldset>
+            <legend>TONE A</legend>
+            <div class="pair">
               <label
-                >Noise seed<input
-                  id="seed"
+                >Frequency / Hz<input
+                  id="frequency-a"
                   type="number"
                   min="0"
-                  max="4294967295"
-                  step="1"
-                  value="1"
+                  step="any"
+                  value="1000"
+                  required /></label
+              ><label
+                >Amplitude<input
+                  id="amplitude-a"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="any"
+                  value="0.8"
                   required
               /></label>
-            </details>
-            <button id="generate" class="primary">Generate & analyze →</button>
-            <p id="notice" role="status" aria-live="polite"></p>
-          </form>
-          <div class="actions">
-            <button id="listen" disabled>Listen once ▷</button
-            ><button id="save-wav" disabled>WAV ↓</button>
-          </div>
-          <p class="help" id="wav-note"></p>
-          <details>
-            <summary>Samples & analysis files</summary>
-            <label class="file-label"
-              >Import amplitudes<input
-                id="import"
-                type="file"
-                accept=".txt,.csv,text/plain,text/csv"
-            /></label>
-            <p class="help">
-              32–4096 samples, a power of two. Commas or whitespace; no header or time column. Uses
-              the sample rate above.
-            </p>
-            <div class="actions">
-              <button id="save-samples" disabled>Samples ↓</button
-              ><button id="save-report" disabled>Analysis ↓</button>
             </div>
+          </fieldset>
+          <fieldset>
+            <legend>TONE B</legend>
+            <div class="pair">
+              <label
+                >Frequency / Hz<input
+                  id="frequency-b"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value="1800"
+                  required /></label
+              ><label
+                >Amplitude<input
+                  id="amplitude-b"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="any"
+                  value="0.3"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+          <details>
+            <summary>Noise & DC offset</summary>
+            <div class="pair">
+              <label
+                >Noise amplitude<input
+                  id="noise"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="any"
+                  value="0"
+                  required /></label
+              ><label
+                >DC offset<input
+                  id="offset"
+                  type="number"
+                  min="-1"
+                  max="1"
+                  step="any"
+                  value="0"
+                  required
+              /></label>
+            </div>
+            <label
+              >Noise seed<input
+                id="seed"
+                type="number"
+                min="0"
+                max="4294967295"
+                step="1"
+                value="1"
+                required
+            /></label>
           </details>
-        </aside>
+          <div class="run-controls">
+            <button id="generate" class="primary">Analyze</button>
+            <p id="notice" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+    <dialog id="measurements" aria-labelledby="measurement-title">
+      <div class="dialog-heading">
+        <h2 id="measurement-title">Measurements</h2>
+        <button data-close="measurements" aria-label="Close measurements">×</button>
       </div>
       <section class="peaks-section">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">LOCAL SPECTRAL MAXIMA</p>
-            <h2>The strongest bins.</h2>
+            <h2>Spectral peaks</h2>
           </div>
           <label for="peak-window"
             >Window<select id="peak-window">
@@ -240,33 +218,53 @@
           </table>
         </div>
       </section>
-      <section class="notes">
-        <h2>A window changes<br />what you can see.</h2>
-        <div>
-          <p>
-            The display compares a rectangular window with a periodic Hann window on the same
-            samples. Amplitudes are corrected for each window’s coherent gain. DC and Nyquist bins
-            are not doubled.
-          </p>
-          <p>
-            This is a one-sided amplitude spectrum, not a power spectral density. There is no zero
-            padding, frequency interpolation, or automatic DC removal. The FFT uses the exact
-            samples shown in the export.
-          </p>
-          <p>
-            All computation stays in your browser. Listening is optional and plays one short,
-            attenuated preview with brief fades; it does not change the analysis.
-          </p>
-          <a
-            href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html"
-            >About the periodic Hann window ↗</a
-          >
-        </div>
-      </section>
-    </main>
-    <footer>
-      <span>MEASURE THE SIGNAL. QUESTION THE WINDOW.</span
-      ><span>No microphone access · no external processing</span>
-    </footer>
+      <details>
+        <summary>Methods and limitations</summary>
+        <section class="notes">
+          <h2>Analysis methods</h2>
+          <div>
+            <p>
+              The display compares a rectangular window with a periodic Hann window on the same
+              samples. Amplitudes are corrected for each window’s coherent gain. DC and Nyquist bins
+              are not doubled.
+            </p>
+            <p>
+              This is a one-sided amplitude spectrum, not a power spectral density. There is no zero
+              padding, frequency interpolation, or automatic DC removal. The FFT uses the exact
+              samples shown in the export.
+            </p>
+            <p>
+              All computation stays in your browser. Listening is optional and plays one short,
+              attenuated preview with brief fades; it does not change the analysis.
+            </p>
+            <a
+              href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html"
+              >About the periodic Hann window ↗</a
+            >
+          </div>
+        </section>
+      </details>
+    </dialog>
+    <dialog id="file-panel" aria-labelledby="file-title">
+      <div class="dialog-heading">
+        <h2 id="file-title">Samples and audio</h2>
+        <button data-close="file-panel" aria-label="Close files">×</button>
+      </div>
+      <label class="file-label"
+        >Import sample amplitudes<input
+          id="import"
+          type="file"
+          accept=".txt,.csv,text/plain,text/csv"
+      /></label>
+      <p class="help">
+        32–4096 samples, a power of two. Commas or whitespace; no header or time column. Uses the
+        current sample rate.
+      </p>
+      <div class="actions">
+        <button id="save-samples" disabled>Export samples CSV</button
+        ><button id="save-report" disabled>Export analysis JSON</button>
+      </div>
+      <p class="help" id="wav-note"></p>
+    </dialog>
   </body>
 </html>

@@ -72,8 +72,8 @@ function generate() {
   }
 }
 function graph(xMax, yMin, yMax, lines, label) {
-  const w = 760,
-    h = 240,
+  const w = Math.max(280, $('wave-plot').clientWidth),
+    h = $('wave-plot').clientHeight || 260,
     l = 48,
     r = 18,
     t = 16,
@@ -189,8 +189,9 @@ $('spectrum-plot').addEventListener('pointermove', (event) => {
   const svg = $('spectrum-plot').querySelector('svg');
   if (!svg) return;
   const rect = svg.getBoundingClientRect(),
-    x = ((event.clientX - rect.left) / rect.width) * 760,
-    ratio = Math.max(0, Math.min(1, (x - 48) / (760 - 48 - 18))),
+    width = svg.viewBox.baseVal.width,
+    x = ((event.clientX - rect.left) / rect.width) * width,
+    ratio = Math.max(0, Math.min(1, (x - 48) / (width - 48 - 18))),
     range = numeric('range') ? Math.min(numeric('range'), report.nyquist) : report.nyquist;
   $('bin').value = Math.round((ratio * range) / report.binWidth);
   inspectBin();
@@ -297,3 +298,15 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) stopAudio();
 });
 example();
+
+for (const [button, panel] of [
+  ['measurements-open', 'measurements'],
+  ['files-open', 'file-panel'],
+])
+  $(button).onclick = () => $(panel).showModal();
+for (const b of document.querySelectorAll('[data-close]'))
+  b.onclick = () => $(b.dataset.close).close();
+
+new ResizeObserver(() => {
+  if (report) render();
+}).observe($('wave-plot'));

@@ -70,3 +70,5 @@ FFT runtime is O(N log N), with O(N) working memory. Plot and report size are bo
 
 - [SciPy's Hann-window documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html) distinguishes periodic spectral-analysis windows from symmetric filter-design windows.
 - [Julius O. Smith, Spectrum Analysis Windows](https://ftp.dsprelated.com/freebooks/sasp/Spectrum_Analysis_Windows.html) discusses windowing finite records for spectrum analysis.
+
+The instrument redesign was browser-checked at desktop and 390-pixel widths: clean/off-bin examples, spectral range and window selection, bin inspection, measurement-dialog dismissal, invalid-frequency rejection, and recovery. All ten DSP tests pass.
