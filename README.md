@@ -4,6 +4,8 @@ A browser-based signal-processing instrument: synthesize deterministic waveforms
 
 ![Signal Study](docs/studio.png)
 
+The spectrum inspector overlays a guide and both window amplitudes at the selected bin, using the current linear or decibel scale. Bins outside a frequency zoom are explicitly labeled and their marker is hidden. Analysis changes fade briefly; reduced-motion preferences are respected.
+
 ## Start
 
 ```sh

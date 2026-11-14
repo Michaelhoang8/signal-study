@@ -60,6 +60,9 @@ function setReport(samples, source) {
   $('bin').max = report.count / 2;
   $('bin').value = Math.min(numeric('bin'), report.count / 2);
   render();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
+    for (const plot of document.querySelectorAll('.plot svg'))
+      plot.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 400 });
   notice(`Analyzed ${report.count} samples. Bin spacing: ${report.binWidth.toFixed(3)} Hz.`);
 }
 function generate() {
@@ -82,7 +85,7 @@ function graph(xMax, yMin, yMax, lines, label) {
     plotH = h - t - b;
   const x = (value) => l + (value / xMax) * plotW,
     y = (value) => t + ((yMax - Math.max(yMin, Math.min(yMax, value))) / (yMax - yMin)) * plotH;
-  let markup = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">`;
+  let markup = `<svg viewBox="0 0 ${w} ${h}" role="img" data-xmax="${xMax}" data-ymin="${yMin}" data-ymax="${yMax}" aria-label="${esc(label)}">`;
   for (let i = 0; i <= 4; i++) {
     const yy = t + (i * plotH) / 4,
       value = yMax - (i * (yMax - yMin)) / 4;
@@ -165,6 +168,42 @@ function inspectBin() {
     b = report.hann.bins[k];
   $('bin-readout').textContent =
     `Bin ${k} / ${a.frequency.toFixed(3)} Hz\nRectangular: ${a.amplitude.toFixed(6)} (${a.db.toFixed(2)} dB)\nHann: ${b.amplitude.toFixed(6)} (${b.db.toFixed(2)} dB)`;
+  const root = $('spectrum-plot').querySelector('svg');
+  if (!root) return;
+  const max = Number(root.dataset.xmax),
+    low = Number(root.dataset.ymin),
+    high = Number(root.dataset.ymax),
+    width = root.viewBox.baseVal.width,
+    height = root.viewBox.baseVal.height;
+  let cursor = root.querySelector('.bin-cursor');
+  if (!cursor) {
+    cursor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    cursor.setAttribute('class', 'bin-cursor');
+    cursor.setAttribute('aria-hidden', 'true');
+    cursor.innerHTML =
+      '<rect class="bin-band" y="16" width="12"/><line class="bin-guide" y1="16"/><circle class="bin-rect-point" r="4"/><circle class="bin-hann-point" r="4"/>';
+    root.append(cursor);
+  }
+  const outside = a.frequency > max;
+  cursor.setAttribute('visibility', outside ? 'hidden' : 'visible');
+  if (outside) {
+    $('bin-readout').textContent += '\nOutside displayed frequency range';
+    return;
+  }
+  const x = 48 + (a.frequency / max) * (width - 66),
+    y = (value) =>
+      16 + ((high - Math.max(low, Math.min(high, value))) / (high - low)) * (height - 48);
+  cursor.setAttribute('transform', `translate(${x},0)`);
+  const band = cursor.querySelector('rect');
+  band.setAttribute('x', '-6');
+  band.setAttribute('height', height - 48);
+  cursor.querySelector('line').setAttribute('y2', height - 32);
+  cursor
+    .querySelector('.bin-rect-point')
+    .setAttribute('cy', y($('scale').value === 'db' ? a.db : a.amplitude));
+  cursor
+    .querySelector('.bin-hann-point')
+    .setAttribute('cy', y($('scale').value === 'db' ? b.db : b.amplitude));
 }
 $('signal-form').addEventListener('submit', (event) => {
   event.preventDefault();

@@ -723,3 +723,28 @@ summary {
     height: 220px;
   }
 }
+.bin-cursor {
+  pointer-events: none;
+}
+.bin-band {
+  fill: #e7eeb010;
+}
+.bin-guide {
+  stroke: #e4edb4;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.65;
+}
+.bin-rect-point {
+  fill: #e6b981;
+  stroke: #181e17;
+  stroke-width: 1.5;
+}
+.bin-hann-point {
+  fill: #b8db84;
+  stroke: #181e17;
+  stroke-width: 1.5;
+}
+.wave-line {
+  filter: drop-shadow(0 0 2px #b8db8455);
+}
